@@ -15,6 +15,10 @@ class StockMove(models.Model):
         string='Analytic Account',
         comodel_name='account.analytic.account',
     )
+    analytic_tag_ids = fields.Many2many(
+        'account.analytic.tag',
+        string='Analytic Tags'
+    )
 
     @api.multi
     def _prepare_account_move_line(self, qty, cost,
@@ -23,13 +27,15 @@ class StockMove(models.Model):
         res = super(StockMove, self)._prepare_account_move_line(
             qty, cost, credit_account_id, debit_account_id)
         # Add analytic account in debit line
-        if not self.analytic_account_id:
+        if not self.analytic_account_id and not self.analytic_tag_ids:
             return res
 
         for num in range(0, 2):
             if res[num][2]["account_id"] != self.product_id.\
                     categ_id.property_stock_valuation_account_id.id:
                 res[num][2].update({
-                    'analytic_account_id': self.analytic_account_id.id,
+                    'analytic_account_id':
+                        self.analytic_account_id.id or False,
+                    'analytic_tag_ids': [6, 0, self.analytic_tag_ids.ids],
                 })
         return res
