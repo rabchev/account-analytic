@@ -36,6 +36,6 @@ class StockMove(models.Model):
                 res[num][2].update({
                     'analytic_account_id':
                         self.analytic_account_id.id or False,
-                    'analytic_tag_ids': [6, 0, self.analytic_tag_ids.ids],
+                    'analytic_tag_ids': [(6, 0, self.analytic_tag_ids.ids)],
                 })
         return res
